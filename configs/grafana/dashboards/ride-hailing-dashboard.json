@@ -1,0 +1,162 @@
+{
+  "dashboard": {
+    "title": "Ride-Hailing Platform",
+    "uid": "ride-hailing-prod",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Active Rides (Real-time)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(active_rides_total)",
+            "legendFormat": "Active Rides"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Drivers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(active_drivers_total)",
+            "legendFormat": "Active Drivers"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Average ETA (minutes)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(avg_eta_seconds) / 60",
+            "legendFormat": "Avg ETA"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 8, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "API Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+      },
+      {
+        "id": 5,
+        "title": "API Response Time (P95)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P95 Latency"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+      },
+      {
+        "id": 6,
+        "title": "Ride Completion Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "sum(rides_completed_total) / sum(rides_requested_total)",
+            "legendFormat": "Completion Rate"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 12}
+      },
+      {
+        "id": 7,
+        "title": "Error Rate by Endpoint",
+        "type": "barchart",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (endpoint) / sum(rate(http_requests_total[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 18, "x": 6, "y": 12}
+      },
+      {
+        "id": 8,
+        "title": "Surge Multiplier Heatmap",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "surge_multiplier",
+            "legendFormat": "Surge Zones"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 18}
+      },
+      {
+        "id": 9,
+        "title": "System Resource Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "node_cpu_seconds_total{mode=\"user\"}",
+            "legendFormat": "CPU Usage"
+          },
+          {
+            "expr": "node_memory_MemUsed_bytes / node_memory_MemTotal_bytes",
+            "legendFormat": "Memory Usage"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 18}
+      },
+      {
+        "id": 10,
+        "title": "Redis Operations Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(redis_commands_total[5m])",
+            "legendFormat": "Commands/sec"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 26}
+      },
+      {
+        "id": 11,
+        "title": "Database Query Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(pg_stat_database_tup_returned[5m])",
+            "legendFormat": "Rows Returned/sec"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 26}
+      },
+      {
+        "id": 12,
+        "title": "WebSocket Connections",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "websocket_active_connections",
+            "legendFormat": "Active Connections"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 26}
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

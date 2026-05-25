@@ -1,0 +1,47 @@
+# Docker Swarm deployment with 3 API servers, 3 WebSocket servers
+version: '3.8'
+
+services:
+  api:
+    image: ride-hailing/api:latest
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+    environment:
+      NODE_ENV: production
+      REDIS_CLUSTER_ENABLED: 'true'
+      DB_READ_REPLICA_ENABLED: 'true'
+    
+  socket:
+    image: ride-hailing/socket:latest
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+    environment:
+      NODE_ENV: production
+      REDIS_CLUSTER_ENABLED: 'true'
+    
+  worker:
+    image: ride-hailing/worker:latest
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
